@@ -1,6 +1,8 @@
 node_modules
 CLIENT/node_modules
+CLIENT/package-lock.json
+CLIENT/.vscode
+CLIENT/.angular
 .env
 
 package-lock.json
-CLIENT/package-lock.json
