@@ -1,6 +1,7 @@
 const Product = require('../models/product');
 const asyncHandler = require('express-async-handler');
 const { filter } = require('../utils/filter');
+const User = require('../models/user');
 
 // Get All Products And product with keywords.
 // For the time being we are only filtering by name.
@@ -11,7 +12,7 @@ const getProducts = asyncHandler(async (req, res) => {
     // Filter is the method which filters the query and return filtered results.
     const products = await filter(Product.find(), req.query);
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       count: allProducts.length,
       resPerPage,
@@ -118,12 +119,17 @@ const deleteProduct = async (req, res) => {
 
 // Review A product
 const reviewProduct = async (req, res) => {
-  const { rating, comment, productId } = req.body;
+  const productId = req.params.id;
+  const { rating, comment, id, name } = req.body;
+
+  if (!productId || id) {
+    throw new Error('Product ID and User Id is required!'); 
+  }
 
   const review = {
-    user: req.user._id,
-    name: req.user.name,
-    rating: Number(rating),
+    user: id,
+    name: name || 'anonymous',
+    rating: Number(rating) || 0,
     comment,
   };
 
@@ -178,6 +184,42 @@ const deleteAReview = async (req, res) => {
   }
 };
 
+const likeProduct = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const productId = req.params.id;
+
+    if (!email) {
+      throw new Error('User Email is required!'); 
+    }
+
+    const user = await User.findOne({email});
+
+    const like = {
+      user: user._id
+    }
+
+    // Finding product to like
+    const product = await Product.findById(productId);
+
+    // Pushing like to the product.
+    product.likes.push(like);
+    product.likesCount += 1;
+
+    await product.save({ validateBeforeSave: false });
+
+    res.status(200).json({
+      success: true,
+      product,
+    });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
 module.exports = {
   getProducts,
   getProductByID,
@@ -187,4 +229,5 @@ module.exports = {
   reviewProduct,
   getAllReviews,
   deleteAReview,
+  likeProduct,
 };

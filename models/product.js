@@ -13,7 +13,7 @@ const productSchema = new mongoose.Schema({
     maxlength: [5, 'Product price cannot exceed 100 characters'],
     default: 0.0,
   },
-  description: {
+  desc: {
     type: String,
     required: [true, 'Please enter product price'],
   },
@@ -21,14 +21,10 @@ const productSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  // will save images in Cloudinary.
-  // Model will be according to that.
-  images: [
-    {
-      public_id: { type: String, required: true },
-      url: { type: String, required: true },
-    },
-  ],
+  image: {
+    type: String,
+    required: true
+  },
   category: {
     type: String,
     required: [true, 'Please select a category for this product'],
@@ -46,11 +42,15 @@ const productSchema = new mongoose.Schema({
         'Sports',
         'Outdoor',
         'Home',
+        'Watches, Glasses And Jewellery',
+        'Groceries',
+        'Beauty',
+        'Computer & Laptops'
       ],
       message: 'Please select correct category for product',
     },
   },
-  seller: {
+  soldBy: {
     type: String,
     required: [true, 'Please enter product seller'],
   },
@@ -63,27 +63,48 @@ const productSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  reviews: [
+  brand: {
+    type: String,
+    default: 'Not Branded'
+  },
+  likesCount: {
+    type: Number,
+    default: 0
+  },
+  likes: [
     {
-      name: { type: String, required: true },
       user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
-      },
-      rating: { type: String, required: true },
-      comment: { type: String, required: true },
-    },
+      } 
+    }
   ],
-  user: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'User',
-    required: true,
+  reviews: {
+    type: Array,
+    default: []
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
+  // reviews: [
+  //   {
+  //     name: { type: String, required: true },
+  //     user: {
+  //       type: mongoose.Schema.Types.ObjectId,
+  //       ref: 'User',
+  //       required: true,
+  //     },
+  //     rating: { type: String, required: true },
+  //     comment: { type: String, required: true },
+  //   },
+  // ],
+  // user: {
+  //   type: mongoose.Schema.ObjectId,
+  //   ref: 'User',
+  //   required: true,
+  // },
+  // createdAt: {
+  //   type: Date,
+  //   default: Date.now,
+  // },
 });
 
 const Product = mongoose.model('Product', productSchema);

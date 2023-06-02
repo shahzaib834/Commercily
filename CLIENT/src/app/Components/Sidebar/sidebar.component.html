@@ -1,1 +1,35 @@
-<div class="bg-red-500 h-full">Sidebar</div>
+<div class="bg-cyan-50 h-full p-3">
+  <!-- Price -->
+  <div class="flex gap-2 items-center">
+    <label class="font-medium text-2xl">Price:</label>
+      <input #min type="number" class="w-[40%] rounded-sm p-1" placeholder="$ 20" (input)="filterMinPrice(min)" />
+      <label class="font-medium text-2xl"> - </label>
+      <input #max type="number" class="w-[40%] rounded-sm p-1" placeholder="$ 100" (input)="filterMaxPrice(max)" />
+  </div>
+
+  <br />
+  <!-- Categories -->
+  <div class="flex flex-col">
+    <label class="font-medium text-2xl">Categories:</label>
+    <div class="flex flex-col ml-4" *ngFor="let category of categories" (click)="filterCategory()">
+      <p
+        class="cursor-pointer"
+        [ngClass]="{ 'font-bold': checkSelectedCategories(category) }"
+        (click)="onCategoryClick(category)"
+      >
+        {{ category }}
+      </p>
+    </div>
+  </div>
+
+  <br />
+
+  <!-- Rating -->
+  <div class="flex flex-col" >
+    <label class="font-medium text-2xl">Ratings:</label>
+    <p class="ml-4">***** - 2.5</p>
+    <i class="fa fa-star"></i>
+    <i class="far fa-star"></i>
+    <i class="fa fa-star-half"></i>
+  </div>
+</div>

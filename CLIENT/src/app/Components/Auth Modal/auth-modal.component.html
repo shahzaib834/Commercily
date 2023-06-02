@@ -1,0 +1,4 @@
+<div [ngClass]="{'hidden': !isModalVisible}" class="absolute top-0 right-0 bottom-0 left-0 m-auto p-2 rounded-lg flex flex-col justify-center items-center bg-gray-300 h-[25%] w-[30%]">
+    <input #email type="email" placeholder="email" class="p-2 border rounded-lg border-blue-200 ml-2" (change)="updateValue(email)" />
+    <button (click)="authUser()" class="bg-blue-400 rounded-md mt-2 p-2 text-gray-50">Sign In / Up</button>
+</div>

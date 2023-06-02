@@ -8,6 +8,7 @@ const {
   reviewProduct,
   getAllReviews,
   deleteAReview,
+  likeProduct,
 } = require('../controllers/productController');
 const { protect, authorizeRoles } = require('../middleware/authMiddleware');
 
@@ -28,12 +29,15 @@ router
   .put(protect, authorizeRoles('admin'), updateProductByID);
 
 // Add a review to the product
-router.route('/review/add').put(protect, reviewProduct);
+router.route('/:id/review').post(reviewProduct);
 
 // Get All reviews of product
 router.route('/reviews/:id').get(protect, getAllReviews);
 
 //Delete a review
 router.route('/review/delete/:id').put(protect, deleteAReview);
+
+// Like a product
+router.route('/:id/like').post(likeProduct);
 
 module.exports = router;

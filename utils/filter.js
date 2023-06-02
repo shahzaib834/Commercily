@@ -12,28 +12,34 @@ const filter = (Product, query) => {
   // Finding product filtered with name
   Product = Product.find({ ...keyword });
 
-  // Filtering with Category.
-  const queryCopy = { ...query };
+  // Category Filtering
+  if (query.category && query.category !== '[]') {
+    categories = query.category.split(',');
+    Product = Product.find({
+      category: {
+        $in: categories
+      }
+    });
+  }
 
-  //Removing fields from the query. Removing everything other than Category.
-  const removeFields = ['keyword', 'limit', 'page'];
+  // Price Filtering
+  const min = query.min && Number(query.min);
+  const max = query.max && Number(query.max);
+  Product = Product.find({
+    price: {
+      $gte: min || 0,
+      $lte: max || 1000
+    }
+  });
 
-  removeFields.forEach((val) => delete queryCopy[val]);
-
-  // Advance filtering for price , ratings , etc.
-  let filteredQuery;
-  filteredQuery = JSON.stringify(queryCopy);
-  filteredQuery = filteredQuery.replace(
-    /\b(gt|lt|gte|lte|in)\b/g,
-    (match) => `$${match}`
-  );
+  // Ratings Filtering
 
   // Pagination Settings
-  const resPerPage = 4;
+  const resPerPage = 8;
   const currentPage = Number(query.page || 1);
   const skip = resPerPage * (currentPage - 1);
 
-  return Product.find(JSON.parse(filteredQuery)).limit(resPerPage).skip(skip);
+  return Product.limit(resPerPage).skip(skip);
 };
 
 module.exports = { filter };

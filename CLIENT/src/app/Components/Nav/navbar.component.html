@@ -1,20 +1,19 @@
 <header class="bg-gray-300 p-3">
-    <nav class="flex justify-around">
+    <nav class="flex justify-around items-center">
         <div class="flex gap-2">
-            <h4>LOGO HERE</h4>
             <!-- Router Link not working -->
-            <button [routerLink]="['/homenope']" >Commercily</button>
+            <button class="text-2xl" [routerLink]="['/home']" >Commercily</button>
         </div>
 
         <!-- Search Bar -->
         <div class="flex gap-3 w-[35%]">
-            <input type="text" class="p-2 rounded-md w-[80%]" />
-            <button  class="w-[20%] text-center p-2 rounded-md bg-red-200">Search</button>
+            <input #searchInput type="text" class="p-2 rounded-md w-[80%]" (input)="fetchProducts(searchInput.value)"/>
+            <!-- <button  class="w-[20%] text-center p-2 rounded-md bg-red-200">Search</button> -->
         </div>
 
         <div class="flex gap-5">
-            <h4>Cart</h4>
-            <h4>Sign In</h4>
+            <h4><i class="fa fa-shopping-cart text-2xl cursor-pointer" [routerLink]="['/checkout']"></i></h4>
+            <button (click)="toggleAuthModal()" >{{ loggedInSuccesfull ? '' : 'Sign In'}}</button>
         </div>
     </nav>
 </header>

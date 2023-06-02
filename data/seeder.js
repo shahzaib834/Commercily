@@ -1,9 +1,8 @@
 const products = require('./products.json');
-const mongoose = require('mongoose');
 const Product = require('../models/product');
 const connectDB = require('../config/db');
 
-connectDB();
+//connectDB();
 
 const seederProducts = async () => {
   try {
@@ -21,4 +20,4 @@ const seederProducts = async () => {
   }
 };
 
-seederProducts();
+module.exports = { seederProducts }

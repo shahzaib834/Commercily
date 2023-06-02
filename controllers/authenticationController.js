@@ -1,55 +1,57 @@
 const User = require('../models/user');
-const cloudinary = require('cloudinary');
+// const cloudinary = require('cloudinary');
 
 const registerUser = async (req, res) => {
   try {
-    const cloudinaryResult = await cloudinary.v2.uploader.upload(
-      req.body.avatar,
-      {
-        folder: 'Shop-it/avatars',
-        width: 150,
-        crop: 'scale',
-      }
-    );
+    // const cloudinaryResult = await cloudinary.v2.uploader.upload(
+    //   req.body.avatar,
+    //   {
+    //     folder: 'Shop-it/avatars',
+    //     width: 150,
+    //     crop: 'scale',
+    //   }
+    // );
 
-    console.log(`cloudinaryResult : ${cloudinaryResult}`);
     const { name, email, password } = req.body;
 
-    if (!name || !email || !password) {
+    if (!email) {
       res.status(400).json({
         success: false,
-        message: 'Please provide name,email and password to continue',
+        message: 'Please provide email address',
       });
 
       return;
     }
 
     const user = await User.create({
-      name,
       email,
-      password,
       //avatar: {
       //  public_id: cloudinaryResult.public_id,
       //  url: cloudinaryResult.secure_url,
       //},
     });
 
-    const token = user.generateWebToken();
+    //const token = user.generateWebToken();
 
     // Saving token into cookie
-    const options = {
-      expires: new Date(
-        Date.now() + process.env.COOKIE_EXPIRES_TIME * 24 * 60 * 60 * 1000
-      ),
-      httpOnly: true,
-    };
+    // const options = {
+    //   expires: new Date(
+    //     Date.now() + process.env.COOKIE_EXPIRES_TIME * 24 * 60 * 60 * 1000
+    //   ),
+    //   httpOnly: true,
+    // };
 
-    res.status(201).cookie('token', token, options).json({
+    res.status(201).json({
       success: true,
-      message: 'User Created successfully',
-      user,
-      token,
-    });
+      message: 'User Created Succesfully',
+      user
+    })
+    // res.status(201).cookie('token', token, options).json({
+    //   success: true,
+    //   message: 'User Created successfully',
+    //   user,
+    //   token,
+    // });
   } catch (err) {
     console.log(err);
     res.status(400).json({
@@ -61,54 +63,67 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email } = req.body;
 
-    if (!email || !password) {
+    if (!email) {
       res.status(400).json({
         success: false,
-        message: 'Please enter email and password',
+        message: 'Please enter email!',
       });
 
       return;
     }
 
-    const user = await User.findOne({ email, password }).select('+password');
+    const user = await User.findOne({ email })
 
     if (!user) {
-      res.status(401).json({
-        success: false,
-        message: 'Invalid email or password',
+      const user = await User.create({
+        email,
+        //avatar: {
+        //  public_id: cloudinaryResult.public_id,
+        //  url: cloudinaryResult.secure_url,
+        //},
       });
 
-      return;
+      return res.status(201).json({
+        success: true,
+        message: 'User Created Succesfully',
+        user
+      })
     }
 
-    const isPasswordMatched = await user.matchPassword(password);
+    return res.status(200).json({
+      success: true,
+      message: 'Logged in',
+      user
+    });
 
-    if (!isPasswordMatched) {
-      res.status(401).json({
-        success: false,
-        message: 'Invalid email or password',
-      });
+    //const isPasswordMatched = await user.matchPassword(password);
 
-      return;
-    }
+    // if (!isPasswordMatched) {
+    //   res.status(401).json({
+    //     success: false,
+    //     message: 'Invalid email or password',
+    //   });
 
-    const token = user.generateWebToken();
+    //   return;
+    // }
+
+    //const token = user.generateWebToken();
 
     // Saving token into cookie
-    const options = {
-      expires: new Date(
-        Date.now() + process.env.COOKIE_EXPIRES_TIME * 24 * 60 * 60 * 1000
-      ),
-      httpOnly: true,
-    };
+    // const options = {
+    //   expires: new Date(
+    //     Date.now() + process.env.COOKIE_EXPIRES_TIME * 24 * 60 * 60 * 1000
+    //   ),
+    //   httpOnly: true,
+    // };
 
-    res.status(200).json({
-      success: true,
-      //token,
-      user,
-    });
+    // res.status(200).json({
+    //   success: true,
+    //   //token,
+    //   user,
+    // });
   } catch (err) {
     res.status(400).json({
       success: false,
@@ -118,10 +133,10 @@ const loginUser = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-  res.cookie('token', null, {
-    expires: new Date(Date.now()),
-    httpOnly: true,
-  });
+  // res.cookie('token', null, {
+  //   expires: new Date(Date.now()),
+  //   httpOnly: true,
+  // });
 
   res.status(200).json({
     success: true,
