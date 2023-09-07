@@ -16,21 +16,32 @@ export class ProductScreen implements OnInit {
   itemsSelected: number = 0;
   likedByMe: boolean = false;
 
-  constructor(private activatedRoute: ActivatedRoute, private apiService: ApiService, private productService: ProductService) {}
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private apiService: ApiService,
+    private productService: ProductService
+  ) {}
+
+  async getData() {
+    this.apiService.getData(`products/${this.id}`).subscribe(
+      (res) => {
+        this.product = res.product;
+        this.likedByMe = res.product.likes.some((elem: any) => {
+          return elem.user === localStorage.getItem('id');
+        });
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  }
 
   ngOnInit(): void {
     this.activatedRoute.paramMap.subscribe((params) => {
       this.id = params.get('id');
     });
 
-    this.apiService.getData(`products/${this.id}`).subscribe((res) => {
-      this.product = res.product;
-      this.likedByMe = res.product.likes.some((elem: any) => {
-        return elem.user === localStorage.getItem('id');
-      });
-    }, (err) => {
-      console.log(err);
-    })
+    this.getData();
   }
 
   updateValue(event: any) {
@@ -43,23 +54,37 @@ export class ProductScreen implements OnInit {
 
   likeProduct() {
     const email = localStorage.getItem('email');
-    this.apiService.postDataWithHeaders(`products/${this.id}/like`, {email}).subscribe((res) => {
-      console.log(res);
-    }, (err) => {
-      console.log(err);
-    })
+    this.apiService
+      .postDataWithHeaders(`products/${this.id}/like`, { email })
+      .subscribe(
+        (res) => {
+          console.log(res);
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
   }
 
   addReview() {
     const userId = localStorage.getItem('id');
-    this.apiService.postDataWithHeaders(`products/${this.id}/review`, {userId, comment: this.myReview}).subscribe((res) => {
-      if (res.success) {
-        // Component not rerendering. need to check this later
-        this.myReview = '';
-      }
-    }, (err) => {
-      console.log(err);
-    })
+    this.apiService
+      .postDataWithHeaders(`products/${this.id}/review`, {
+        userId,
+        comment: this.myReview,
+      })
+      .subscribe(
+        (res) => {
+          if (res.success) {
+            // Component not rerendering. need to check this later
+            this.myReview = '';
+            this.getData();
+          }
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
   }
 
   addToCart() {
@@ -72,12 +97,14 @@ export class ProductScreen implements OnInit {
     }
 
     if (cart) {
-      cart.push({...this.product, toOrder: this.itemsSelected});
+      cart.push({ ...this.product, toOrder: this.itemsSelected });
       localStorage.setItem('cart', JSON.stringify(cart));
       return;
     }
-    
-    let cartToMake: Array<ProductDataModel> = [{...this.product, toOrder: this.itemsSelected}];
+
+    let cartToMake: Array<ProductDataModel> = [
+      { ...this.product, toOrder: this.itemsSelected },
+    ];
     localStorage.setItem('cart', JSON.stringify(cartToMake));
   }
 }

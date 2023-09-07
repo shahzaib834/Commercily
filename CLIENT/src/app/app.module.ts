@@ -6,7 +6,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeScreen } from './Screens/Home Screen/home-screen.component';
 import { NavComponent } from './Components/Nav/navbar.component';
-import { FooterComponent } from './Components/Footer/footer.component';
 import { SideBarComponent } from './Components/Sidebar/sidebar.component';
 import { AllProductsComponent } from './Components/AllProducts/all-products.component';
 import { ApiService } from './api.service';
@@ -26,16 +25,15 @@ import { CheckoutScreen } from './Screens/Checkout Screen/checkout-screen.compon
     ProductScreen,
     CheckoutScreen,
     AllProductsComponent,
-    FooterComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     ReactiveFormsModule,
-    CommonModule
+    CommonModule,
   ],
   providers: [ApiService, ProductService],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
